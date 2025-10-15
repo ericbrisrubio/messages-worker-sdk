@@ -1,0 +1,24 @@
+on: [pull_request]
+name: Golang CI
+jobs:
+  checks:
+    strategy:
+      matrix:
+        go-version: [ 1.24.x ]
+        os: [ ubuntu-latest ]
+    name: run
+    runs-on: ${{matrix.os}}
+    steps:
+    - name: checkout master 
+      uses: actions/checkout@master
+    
+    - name: checking makefile
+      run: cat -e -t -v Makefile
+
+    - name: Running process quality tests
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go-version }}
+#        args: make run-pipeline
+
+    - run: make run-pipeline
