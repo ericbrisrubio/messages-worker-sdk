@@ -7,6 +7,7 @@ A Go SDK client for interacting with the messages-worker service. This SDK provi
 - **Message Operations**: Submit single or bulk messages with different priorities
 - **Worker Management**: Monitor and scale workers dynamically
 - **Health Checks**: Check service health and availability
+- **Callback Signature Verification**: Verify HMAC-SHA256 signatures for secure callback handling
 - **Error Handling**: Comprehensive error handling with custom error types
 - **Context Support**: Full context.Context support for timeouts and cancellation
 - **Type Safety**: Strongly typed API with proper validation
@@ -248,11 +249,70 @@ defer cancel()
 resp, err := client.PostMessage(ctx, messageReq)
 ```
 
+## Callback Signature Verification
+
+The messages-worker can generate HMAC-SHA256 signatures for callback requests. Use the SDK to verify these signatures:
+
+```go
+import (
+    "io"
+    "github.com/ericbrisrubio/messages-worker-sdk"
+)
+
+func handleCallback(w http.ResponseWriter, r *http.Request) {
+    secret := os.Getenv("CALLBACK_SECRET")
+    
+    // Read the request body
+    body, err := io.ReadAll(r.Body)
+    if err != nil {
+        log.Printf("Failed to read request body: %v", err)
+        http.Error(w, "Failed to read request body", http.StatusBadRequest)
+        return
+    }
+    
+    // Get signature from header
+    signature := r.Header.Get(sdk.GetSignatureHeader())
+    
+    // Verify signature
+    valid, err := sdk.VerifyCallbackSignature(body, signature, secret)
+    if err != nil {
+        log.Printf("Signature verification error: %v", err)
+        http.Error(w, "Signature verification failed", http.StatusUnauthorized)
+        return
+    }
+    if !valid {
+        log.Printf("Invalid signature")
+        http.Error(w, "Invalid signature", http.StatusUnauthorized)
+        return
+    }
+    
+    // Process callback...
+    log.Println("Signature verified successfully")
+}
+```
+
+### Signature Header
+
+The messages-worker sends signatures in the `X-Callback-Signature` header:
+
+```
+X-Callback-Signature: <hmac-sha256-hex-signature>
+```
+
+### Configuration
+
+Set the `CALLBACK_SECRET` environment variable in your messages-worker configuration:
+
+```bash
+export CALLBACK_SECRET="your-secret-key-here"
+```
+
 ## Examples
 
 See the `examples/` directory for complete working examples:
 
 - `examples/main.go`: Comprehensive example showing all SDK features
+- `examples/callback_handler.go`: Complete callback handler with signature verification
 
 ## API Reference
 
