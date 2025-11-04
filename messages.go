@@ -15,18 +15,20 @@ const (
 	PriorityHigh   Priority = "high"
 )
 
-// Topic represents the topic/category of a message
-type Topic string
+// Topic2 represents the topic/category of a message
+type Topic2 string
+
+type TopicNonSense string
 
 const (
-	TopicPullRequests Topic = "pullrequests"
+	TopicPullRequests Topic2 = "pullrequests"
 )
 
 // MessageRequest represents a single message request
 type MessageRequest struct {
 	ItemID      string      `json:"item_id"`
 	Priority    Priority    `json:"priority"`
-	Topic       Topic       `json:"topic"`
+	Topic       Topic2      `json:"topic"`
 	CallbackURL string      `json:"callback_url"`
 	ObjectBody  interface{} `json:"object_body"`
 }
@@ -37,7 +39,7 @@ type MessageResponse struct {
 	Status   string   `json:"status"`
 	ItemID   string   `json:"itemId"`
 	Priority Priority `json:"priority"`
-	Topic    Topic    `json:"topic"`
+	Topic    Topic2   `json:"topic"`
 }
 
 // BulkMessageRequest represents a request to post multiple messages
@@ -132,4 +134,3 @@ func (c *Client) PostLowPriorityMessage(ctx context.Context, itemID string, call
 
 	return c.PostMessage(ctx, req)
 }
-
