@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// Priority represents the priority level of a message
+// Priority represents the priority level of a message this is it again
 type Priority string
 
 const (
