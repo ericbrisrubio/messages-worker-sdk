@@ -15,7 +15,7 @@ const (
 	PriorityHigh   Priority = "high"
 )
 
-// Topic2 represents the topic/category of a message
+// Topic2 represents the topic/category of a message this is it
 type Topic2 string
 
 type TopicNonSense string
