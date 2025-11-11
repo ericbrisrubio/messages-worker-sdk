@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	// Create a client with default configuration
+	// Create a client with default configuration 
 	client := sdk.NewClientWithDefaults()
 
 	// Or create a client with custom configuration
